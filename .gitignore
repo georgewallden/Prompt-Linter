@@ -1,0 +1,69 @@
+# ==============================================================================
+# Python
+# ==============================================================================
+# Ignore the virtual environment directory
+/venv/
+/env/
+
+# Ignore Python bytecode and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Python packaging and distribution directories
+.Python
+build/
+dist/
+*.egg-info/
+sdist/
+wheel/
+pip-wheel-metadata/
+
+# ==============================================================================
+# Project-Specific Artifacts
+# ==============================================================================
+# Ignore the local data staging directory entirely
+/data/
+
+# Ignore generated model and data files by extension
+*.pth
+*.jsonl
+*.yaml
+
+# ==============================================================================
+# Secrets
+# ==============================================================================
+# Ignore environment variables files
+.env
+.env.*
+
+# Ignore private keys
+*.pem
+*.key
+
+# ==============================================================================
+# IDE & OS Files
+# ==============================================================================
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE-specific settings directories
+.vscode/
+.idea/
+
+# ==============================================================================
+# Terraform
+# ==============================================================================
+# Ignore local Terraform state files and logs
+*.tfstate
+*.tfstate.backup
+crash.log
+*.tfvars
+
+# Ignore the directory where Terraform downloads providers
+.terraform/
+
+# Ignore the dependency lock file
+.terraform.lock.hcl
