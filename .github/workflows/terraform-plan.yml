@@ -35,7 +35,7 @@ jobs:
         working-directory: ./terraform
 
       - name: Post Plan to PR
-        uses: terraform-aws-modules/terraform-aws-pr-commenter@v1
+        uses: terraform-aws-modules/terraform-pr-commenter@v1
         with:
           path: ./terraform
           plan_path: tfplan
