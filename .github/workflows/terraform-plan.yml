@@ -36,6 +36,4 @@ jobs:
 
       - name: Post Plan to PR
         uses: robburger/terraform-pr-commenter@v1 
-        with:
-          path: ./terraform
-          plan_path: tfplan
+        working-directory: ./terraform
