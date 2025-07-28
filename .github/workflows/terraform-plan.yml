@@ -35,7 +35,5 @@ jobs:
         working-directory: ./terraform
 
       - name: Post Plan to PR
-        uses: robburger/terraform-pr-commenter@v1 
+        uses: robburger/terraform-pr-commenter@v1
         working-directory: ./terraform
-
-  #######################################################################################
