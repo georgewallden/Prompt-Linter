@@ -15,7 +15,5 @@ resource "aws_glue_job" "python_shell_job" {
   }
 
   glue_version      = "3.0"
-  worker_type       = "G.1X"
-  number_of_workers = 1
   tags              = var.tags
 }
