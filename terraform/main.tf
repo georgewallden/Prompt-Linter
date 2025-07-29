@@ -1,4 +1,4 @@
-# terraform/main.tf         
+# terraform/main.tf          
 
 # Configure provider to be AWS
 provider "aws" {
