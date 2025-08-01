@@ -1,0 +1,13 @@
+# prompt-linter/training/requirements.txt
+
+# Core ML Framework
+torch
+
+# Hugging Face library for transformer models and tokenizers
+transformers
+
+# Library for tokenizing text efficiently
+tokenizers
+
+# Library for Explainable AI (XAI)
+captum
