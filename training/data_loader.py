@@ -9,17 +9,31 @@ class PromptDataset(Dataset):
     """
     A PyTorch Dataset for loading and processing the master.jsonl file.
     """
-    def __init__(self, file_path, tokenizer, intent_map):
+    def __init__(self, data_source, tokenizer, intent_map):
+        """
+        Initializes the Dataset.
 
+        Args:
+            data_source (str or list): Either a path to the .jsonl file or a 
+                                       list of JSON strings.
+            tokenizer: The Hugging Face tokenizer to use.
+            intent_map (dict): A mapping from intent strings to integer IDs.
+        """
         self.tokenizer = tokenizer
         self.intent_map = intent_map
-
-        # Load the entire dataset into memory.
-        # For a .jsonl file, reading all lines as strings is memory-efficient.
-        print(f"Loading dataset from {file_path}...")
-        with open(file_path, 'r', encoding='utf-8') as f:
-            self.data = f.readlines()
-        print(f"Loaded {len(self.data)} records.")
+        
+        # --- THIS IS THE MODIFIED BLOCK ---
+        if isinstance(data_source, str) or isinstance(data_source, Path):
+            print(f"Loading dataset from file: {data_source}")
+            with open(data_source, 'r', encoding='utf-8') as f:
+                self.data = f.readlines()
+        elif isinstance(data_source, list):
+            print(f"Loading dataset from a list of {len(data_source)} records.")
+            self.data = data_source
+        else:
+            raise TypeError("data_source must be a file path (str) or a list of strings.")
+        
+        print(f"Dataset initialized with {len(self.data)} records.")
 
 
     def __len__(self):
