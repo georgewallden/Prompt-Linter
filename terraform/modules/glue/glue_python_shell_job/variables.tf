@@ -32,3 +32,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "job_capacity" {
+  description = "The number of DPUs to allocate to this Python Shell job."
+  type        = number
+  default     = 1
+}

@@ -3,6 +3,7 @@
 resource "aws_glue_job" "python_shell_job" {
   name     = var.job_name
   role_arn = var.role_arn
+  max_capacity = var.job_capacity
 
   command {
     name            = "pythonshell"
