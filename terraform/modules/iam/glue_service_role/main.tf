@@ -18,20 +18,27 @@ resource "aws_iam_policy" "glue_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      // This statement for S3 is correct and stays the same
       {
+        Sid      = "AllowS3Access"
         Effect   = "Allow"
-        Action   = ["s3:GetObject"]
-        Resource = "${var.s3_raw_bucket_arn}/*"
+        Action   = ["s3:GetObject", "s3:PutObject"]
+        Resource = [
+            "${var.s3_raw_bucket_arn}/*",
+            "${var.s3_processed_bucket_arn}/*",
+            "${var.s3_artifacts_bucket_arn}/glue-scripts/*"
+        ]
       },
+      // THIS IS THE NEW, CRITICAL STATEMENT FOR LOGGING
       {
+        Sid      = "AllowCloudWatchLogs"
         Effect   = "Allow"
-        Action   = ["s3:PutObject"]
-        Resource = "${var.s3_processed_bucket_arn}/*"
-      },
-      {
-        Effect   = "Allow"
-        Action   = "s3:GetObject"
-        Resource = "${var.s3_artifacts_bucket_arn}/glue-scripts/*"
+        Action   = [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*" // Standard practice for Glue logging
       }
     ]
   })
