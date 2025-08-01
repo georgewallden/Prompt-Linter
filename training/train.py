@@ -1,5 +1,6 @@
 # prompt-linter/training/train.py
 
+# Import necessary data handling libraries
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -11,6 +12,9 @@ from pathlib import Path
 from model import PromptLinterModel
 from loss import GuardrailLoss
 from data_loader import PromptDataset, collate_fn
+
+# Import the progress bar library
+from tqdm import tqdm
 
 # --- 1. Configuration ---
 # All hyperparameters and configuration settings are in one place.
@@ -124,14 +128,51 @@ def train():
    
     # --- 3. The Training Loop (To be implemented) ---
     print("\n--- Starting Training ---")
+
+    for epoch in range(CONFIG["epochs"]):
+        print(f"\n===== Epoch {epoch + 1}/{CONFIG['epochs']} =====")
+        
+        # --- Training Phase ---
+        model.train() # Set the model to training mode
+        total_train_loss = 0
+        
+        for batch in tqdm(train_loader, desc="Training"):
+            # Move batch to the correct device
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            
+            # Move all labels in the nested dictionary to the device
+            labels = {key: val.to(device) for key, val in batch['labels'].items()}
+
+            # 1. Clear any previously calculated gradients
+            optimizer.zero_grad()
+            
+            # 2. Perform a forward pass
+            predictions = model(input_ids=input_ids, attention_mask=attention_mask)
+            
+            # 3. Calculate the loss
+            loss = loss_fn(predictions, labels)
+            
+            # 4. Perform backpropagation to calculate gradients
+            loss.backward()
+            
+            # 5. (Optional but good practice) Clip gradients to prevent them from exploding
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            
+            # 6. Update the model's weights
+            optimizer.step()
+            
+            # 7. Update the learning rate
+            scheduler.step()
+            
+            total_train_loss += loss.item()
+            
+        avg_train_loss = total_train_loss / len(train_loader)
+        print(f"Average Training Loss: {avg_train_loss:.4f}")
     
-    # for epoch in range(CONFIG["epochs"]):
-    #     ...
     
     # --- 4. Final Evaluation and Saving (To be implemented) ---
     print("\n--- Training Complete ---")
     
-    # ...
-
 if __name__ == "__main__":
     train()
