@@ -29,6 +29,41 @@ CONFIG = {
     "num_intents": None, 
 }
 
+def evaluate(model, data_loader, loss_fn, device):
+    """
+    Evaluates the model on a given dataset.
+
+    Args:
+        model (nn.Module): The model to evaluate.
+        data_loader (DataLoader): The DataLoader for the evaluation data.
+        loss_fn: The loss function.
+        device: The device to run the evaluation on.
+
+    Returns:
+        float: The average loss over the evaluation dataset.
+    """
+    # 1. Set the model to evaluation mode
+    model.eval()
+    
+    total_loss = 0
+    
+    # 2. Disable gradient calculations for efficiency and correctness
+    with torch.no_grad():
+        for batch in tqdm(data_loader, desc="Evaluating"):
+            # Move batch to the correct device
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = {key: val.to(device) for key, val in batch['labels'].items()}
+            
+            # Perform a forward pass
+            predictions = model(input_ids=input_ids, attention_mask=attention_mask)
+            
+            # Calculate the loss
+            loss = loss_fn(predictions, labels)
+            total_loss += loss.item()
+            
+    return total_loss / len(data_loader)
+
 def train():
     """The main training function."""
     
@@ -169,10 +204,24 @@ def train():
             
         avg_train_loss = total_train_loss / len(train_loader)
         print(f"Average Training Loss: {avg_train_loss:.4f}")
-    
-    
-    # --- 4. Final Evaluation and Saving (To be implemented) ---
+        
+    # --- 4. Final Evaluation and Saving ---
+        avg_val_loss = evaluate(model, val_loader, loss_fn, device)
+        print(f"Average Validation Loss: {avg_val_loss:.4f}")
+        
+        # --- Checkpointing ---
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            print("Validation loss improved! Saving model...")
+            
+            # Define the path to save the model
+            save_path = CONFIG["artifacts_path"] / "best_model.pth"
+            
+            # Save the model's state dictionary
+            torch.save(model.state_dict(), save_path)
+
     print("\n--- Training Complete ---")
+    print(f"Best validation loss achieved: {best_val_loss:.4f}")
     
 if __name__ == "__main__":
     train()
