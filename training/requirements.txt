@@ -11,3 +11,6 @@ tokenizers
 
 # Library for Explainable AI (XAI)
 captum
+
+# progress bar library
+tqdm
