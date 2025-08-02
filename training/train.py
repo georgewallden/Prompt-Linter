@@ -163,7 +163,7 @@ def train():
    
     # --- 3. The Training Loop (To be implemented) ---
     print("\n--- Starting Training ---")
-
+    best_val_loss = float('inf') 
     for epoch in range(CONFIG["epochs"]):
         print(f"\n===== Epoch {epoch + 1}/{CONFIG['epochs']} =====")
         
