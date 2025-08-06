@@ -12,5 +12,11 @@ tokenizers
 # Library for Explainable AI (XAI)
 captum
 
-# progress bar library
+# Data manipulation and analysis
+pandas
+
+# For writing the final rules.yaml file
+PyYAML
+
+# Progress bar library for loops
 tqdm
