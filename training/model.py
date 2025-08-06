@@ -48,39 +48,34 @@ class PromptLinterModel(nn.Module):
             nn.Linear(hidden_size, 1)
         )
 
-    def forward(self, input_ids, attention_mask):
+    def forward(self, input_ids=None, attention_mask=None, inputs_embeds=None):
         """
         Defines the forward pass of the model.
         
-        Args:
-            input_ids (torch.Tensor): Tensor of token IDs. Shape: (batch_size, sequence_length)
-            attention_mask (torch.Tensor): Tensor of attention masks. Shape: (batch_size, sequence_length)
-            
-        Returns:
-            dict: A dictionary containing the raw output tensors (logits) from each head.
+        This is now flexible and can accept either token IDs (for training/prediction)
+        or pre-made embeddings (for XAI analysis).
         """
-        # 1. Pass the inputs through the base transformer model.
-        # The output contains the hidden states for all tokens in the sequence.
+        # --- CHANGE 1: Add a check to prevent invalid input ---
+        if input_ids is not None and inputs_embeds is not None:
+            raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
+            
+        # --- CHANGE 2: Pass all possible arguments to the base model ---
+        # The underlying Hugging Face model will intelligently use whichever one is provided.
         base_outputs = self.base_model(
             input_ids=input_ids, 
-            attention_mask=attention_mask
+            attention_mask=attention_mask,
+            inputs_embeds=inputs_embeds
         )
         
-        # `last_hidden_state` has shape: (batch_size, sequence_length, hidden_size)
+        # --- The rest of the logic is unchanged and correct ---
         last_hidden_state = base_outputs.last_hidden_state
-        
-        # 2. Isolate the embedding of the [CLS] token.
-        # The [CLS] token is always the first token (at index 0). Its hidden state
-        # is used as an aggregate representation of the entire sequence.
-        # Shape becomes: (batch_size, hidden_size)
         cls_embedding = last_hidden_state[:, 0]
         
-        # 3. Pass the [CLS] embedding through each of the specialized heads.
         intent_logits = self.intent_head(cls_embedding)
         trait_logits = self.trait_head(cls_embedding)
         risk_logits = self.risk_head(cls_embedding)
         
-        # 4. Return the outputs in a structured dictionary.
+        # Your original dictionary structure is preserved for compatibility
         return {
             "intent": intent_logits,
             "traits": trait_logits,
