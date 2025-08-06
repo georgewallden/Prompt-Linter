@@ -20,3 +20,13 @@ PyYAML
 
 # Progress bar library for loops
 tqdm
+
+# Web Server
+fastapi
+uvicorn[standard]
+
+# Additional Libraries
+datasets
+pyarrow
+pandas
+boto3

@@ -1,5 +1,0 @@
-# prompt-linter/scripts/requirements.txt
-datasets
-pyarrow
-pandas
-boto3

@@ -5,7 +5,7 @@ from pathlib import Path
 from transformers import AutoTokenizer
 
 # We need to import our model class definition again
-from training.model import PromptLinterModel
+from src.training.model import PromptLinterModel
 from .gamification import enrich_with_replay_history
 
 class AnalysisEngine:
