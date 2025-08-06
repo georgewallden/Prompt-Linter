@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Guardrail</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; padding-top: 40px; }
+        .container { width: 100%; max-width: 800px; }
+        h1 { text-align: center; color: #bb86fc; }
+        textarea { width: 100%; height: 120px; background-color: #1e1e1e; color: #e0e0e0; border: 1px solid #333; border-radius: 8px; padding: 12px; font-size: 16px; resize: vertical; box-sizing: border-box; }
+        button { display: block; width: 100%; padding: 12px; background-color: #03dac6; color: #121212; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        button:disabled { background-color: #333; color: #555; cursor: not-allowed; }
+        #results { margin-top: 30px; background-color: #1e1e1e; border-radius: 8px; padding: 20px; }
+        .frame { border-left: 3px solid; padding: 10px 15px; margin-bottom: 15px; }
+        .frame.base { border-color: #03dac6; }
+        .frame.increase { border-color: #cf6679; }
+        .frame.decrease { border-color: #018786; }
+        .frame p { margin: 0; }
+        .frame .description { font-weight: bold; }
+        .frame .risk { font-family: "Courier New", Courier, monospace; font-size: 14px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>LLM Intent & Hallucination Guardrail</h1>
+    <textarea id="prompt-input" placeholder="Enter your prompt here..."></textarea>
+    <button id="analyze-button">Analyze</button>
+    <div id="results"></div>
+</div>
+
+<script>
+    const promptInput = document.getElementById('prompt-input');
+    const analyzeButton = document.getElementById('analyze-button');
+    const resultsDiv = document.getElementById('results');
+    const backendUrl = 'http://127.0.0.1:8000/analyze'; // The address of our Python backend
+
+    analyzeButton.addEventListener('click', async () => {
+        const prompt = promptInput.value;
+        if (!prompt) {
+            alert('Please enter a prompt.');
+            return;
+        }
+
+        // Disable button and show loading state
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = 'Analyzing...';
+        resultsDiv.innerHTML = '';
+
+        try {
+            // Use the Fetch API to send a POST request to our backend
+            const response = await fetch(backendUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt: prompt }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'An error occurred.');
+            }
+
+            const result = await response.json();
+            displayResults(result.data);
+
+        } catch (error) {
+            resultsDiv.innerHTML = `<p style="color: #cf6679;">Error: ${error.message}</p>`;
+        } finally {
+            // Re-enable the button
+            analyzeButton.disabled = false;
+            analyzeButton.textContent = 'Analyze';
+        }
+    });
+
+    function displayResults(data) {
+        // Clear previous results
+        resultsDiv.innerHTML = '';
+        
+        // Loop through the 'replay_history' and create an element for each frame
+        data.replay_history.forEach(frame => {
+            const frameDiv = document.createElement('div');
+            
+            let frameClass = 'frame';
+            let riskChange = '';
+            if (frame.event_type === 'BASE_MODEL_SCORE') {
+                frameClass += ' base';
+            } else if (frame.event_type === 'RULE_TRIGGER') {
+                const ruleType = frame.description.includes('RISK_INCREASE') ? 'increase' : 'decrease';
+                frameClass += ` ${ruleType}`;
+            }
+            frameDiv.className = frameClass;
+
+            const descriptionP = document.createElement('p');
+            descriptionP.className = 'description';
+            descriptionP.textContent = frame.description;
+            
+            const riskP = document.createElement('p');
+            riskP.className = 'risk';
+            const riskPercent = (frame.scores.hallucination_risk * 100).toFixed(2);
+            riskP.textContent = `Hallucination Risk: ${riskPercent}%`;
+
+            frameDiv.appendChild(descriptionP);
+            frameDiv.appendChild(riskP);
+            resultsDiv.appendChild(frameDiv);
+        });
+    }
+</script>
+
+</body>
+</html>
