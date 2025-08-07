@@ -1,0 +1,64 @@
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+}
+
+h1 {
+  text-align: center;
+  color: #bb86fc;
+}
+
+textarea {
+  width: 100%;
+  height: 120px;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #03dac6;
+  color: #121212;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+button:disabled {
+  background-color: #333;
+  color: #555;
+  cursor: not-allowed;
+}
+
+.results {
+  margin-top: 30px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  padding: 20px;
+  white-space: pre-wrap; /* Allows the pre tag to wrap */
+  word-wrap: break-word; /* Breaks long words */
+}
+
+.error-message {
+  color: #cf6679;
+}

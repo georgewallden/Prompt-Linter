@@ -13,7 +13,7 @@ from src.training.model import PromptLinterModel
 
 # --- API Application Setup (Unchanged) ---
 app = FastAPI(
-    title="LLM Intent & Hallucination Guardrail",
+    title="Prompt Linter",
     description="A pre-flight check for LLM prompts.",
     version="1.0.0"
 )
