@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { analyzePrompt } from './services/api';
 import type { AnalysisData } from './types';
-import { ResultsDisplay } from './components/ResultsDisplay'; // Import the new component
+import { ResultsDisplay } from './components/ResultsDisplay';
 import './App.css';
 
 function App() {
@@ -27,24 +27,24 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Prompt Linter</h1>
-      <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Enter your prompt here..."
-        disabled={isLoading}
-      />
-      <button onClick={handleAnalyzeClick} disabled={isLoading}>
-        {isLoading ? 'Analyzing...' : 'Analyze'}
-      </button>
-
-      {/* --- THIS IS THE NEW LOGIC --- */}
-      <div className="results-area">
-        {error && <p className="error-message">Error: {error}</p>}
-        
-        {/* If we have data, render the ResultsDisplay component and pass the data to it */}
-        {analysisData && <ResultsDisplay data={analysisData} />}
+      <div className="header">
+        <h1>Prompt Linter</h1>
       </div>
+      
+      <div className="input-card">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Enter a prompt to analyze..."
+          disabled={isLoading}
+        />
+        <button onClick={handleAnalyzeClick} disabled={isLoading}>
+          {isLoading ? 'Analyzing...' : 'Analyze'}
+        </button>
+      </div>
+
+      {error && <p className="error-message">Error: {error}</p>}
+      {analysisData && <ResultsDisplay data={analysisData} />}
     </div>
   );
 }
